@@ -29,7 +29,6 @@ class Repository(val apiService: ApiService) {
             val response = apiService.getTeamDetail(idTeam)
 //            val response = apiService.getTeamDetail()
             response.let {
-                println("<><><><!@#!#!@#!@##! ${it.body()}")
                 return it
             }
         } catch (error : Exception){

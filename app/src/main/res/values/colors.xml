@@ -10,5 +10,9 @@
     <color name="gray">#4C4848</color>
 
     <color name="colorPrimary">#B53939</color>
+<!--    <color name="colorPrimary">#125688</color>-->
+    <color name="colorPrimaryDark">#0D47A1</color>
+    <color name="colorAccent">#ffa000</color>
+    <color name="colorSecondary">#2196F3</color>
     <color name="color_transparent">#00FFFFFF</color>
 </resources>

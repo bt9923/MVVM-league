@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat.startActivity
@@ -56,14 +57,16 @@ class TeamsAdapter(var teams: MutableList<Team>, val application: MainActivity) 
         return teams.size
     }
 
-    class ViewHolder(val view: View): RecyclerView.ViewHolder(view){
+    class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         private var badgeTeam = view.findViewById<ImageView>(R.id.badgeTeam)
         private var nameTeam = view.findViewById<TextView>(R.id.nameTeam)
         private var stadiumTeam = view.findViewById<TextView>(R.id.stadiumTeam)
         private var cardView = view.findViewById<CardView>(R.id.cardView)
-        var mDialogInfoAppts : Dialog? = null
+        var progressBar : ProgressBar? = null
 
         fun bind(team: Team, context: MainActivity, teamsViewModel: TeamsViewModel?){
+            progressBar = ProgressBar(context)
+
             Glide
                 .with(context).load(team.strTeamBadge).into(badgeTeam)
 
@@ -71,8 +74,7 @@ class TeamsAdapter(var teams: MutableList<Team>, val application: MainActivity) 
             stadiumTeam.text = team.strStadium
 
             cardView.setOnClickListener {
-
-                println("<<<<<<<<<<<<< ${team.idTeam}")
+                teamsViewModel!!.loadTeamDetail(team.idTeam)
                 showDialogInfoAppts(context, teamsViewModel, team.idTeam)
             }
         }
@@ -82,67 +84,72 @@ class TeamsAdapter(var teams: MutableList<Team>, val application: MainActivity) 
             teamsViewModel: TeamsViewModel?,
             idTeam: String
         ) {
-            mDialogInfoAppts = Dialog(context)
             //        mDialogInfoAppts.setTitle(R.string.type_service_consultation);
+            var mDialogInfoAppts = Dialog(context)
             mDialogInfoAppts?.requestWindowFeature(Window.FEATURE_NO_TITLE)
             mDialogInfoAppts?.setContentView(R.layout.info_appointment_available)
             val nameTeam = mDialogInfoAppts?.findViewById<TextView?>(R.id.nameTeam)
             val stadiumTeam = mDialogInfoAppts?.findViewById<TextView?>(R.id.stadiumTeam)
-            val foundationYearTeam = mDialogInfoAppts!!.findViewById<TextView?>(R.id.foundationYearTeam)
-            val badgeTeam = mDialogInfoAppts!!.findViewById<ImageView?>(R.id.imgPhysicianItem)
+            val foundationYearTeam = mDialogInfoAppts?.findViewById<TextView?>(R.id.foundationYearTeam)
+            val badgeTeam = mDialogInfoAppts?.findViewById<ImageView?>(R.id.imgPhysicianItem)
 
             val teamEvents = mDialogInfoAppts?.findViewById<TextView?>(R.id.teamEvents)
 //            val hourAppts = mDialogInfoAppts!!.findViewById(R.id.hourAppointment)
-            val webSiteTeam = mDialogInfoAppts!!.findViewById<TextView>(R.id.webSiteTeam)
-            val instagramTeam = mDialogInfoAppts!!.findViewById<ImageView>(R.id.instagramTeam)
-            val facebookTeam = mDialogInfoAppts!!.findViewById<ImageView>(R.id.facebookTeam)
-            val youtubeTeam = mDialogInfoAppts!!.findViewById<ImageView>(R.id.youtubeTeam)
-            val twitterTeam = mDialogInfoAppts!!.findViewById<ImageView>(R.id.twitterTeam)
-            val mBtnCancel = mDialogInfoAppts!!.findViewById<Button?>(R.id.btnCancel)
-            val btnBookAppt = mDialogInfoAppts!!.findViewById<Button?>(R.id.btnBookAppt)
+            val webSiteTeam = mDialogInfoAppts?.findViewById<TextView>(R.id.webSiteTeam)
+            val instagramTeam = mDialogInfoAppts?.findViewById<ImageView>(R.id.instagramTeam)
+            val facebookTeam = mDialogInfoAppts?.findViewById<ImageView>(R.id.facebookTeam)
+            val youtubeTeam = mDialogInfoAppts?.findViewById<ImageView>(R.id.youtubeTeam)
+            val twitterTeam = mDialogInfoAppts?.findViewById<ImageView>(R.id.twitterTeam)
+            val jerseyTeam = mDialogInfoAppts?.findViewById<ImageView>(R.id.jerseyTeam)
+            val mBtnCancel = mDialogInfoAppts?.findViewById<Button?>(R.id.btnCancel)
+            val btnBookAppt = mDialogInfoAppts?.findViewById<Button?>(R.id.btnBookAppt)
 
             webSiteTeam?.movementMethod = LinkMovementMethod.getInstance()
-
-            teamsViewModel!!.loadTeamDetail(idTeam)
+//            teamsViewModel!!.loadTeamDetail(idTeam)
             teamsViewModel!!.getTeamDetail().observe(context, Observer { result ->
                 when (result) {
                     is Result.Success -> {
-                        println("<<<<<<<<<<<<< ${result.data[0].strTeam}")
-                        println("<<<<<<<<<<<<< ${result.data[0].intFormedYear}")
-                        println("<<<<<<<<<<<<< ${result.extractData!!.get(0).intFormedYear} >>>>>>>>>>>>>>")
-
                         Glide
-                            .with(context).load(result.data[0].strTeamBadge).into(badgeTeam)
+                            .with(context).load(result.data[0].strTeamBadge).into(badgeTeam!!)
 
                         nameTeam?.text = result.extractData!![0].strTeam
                         stadiumTeam?.text = "Estadio: ${result.extractData!![0].strStadium}"
                         foundationYearTeam?.text =
                             "Año de fundación: ${result.extractData!![0].intFormedYear} "
                         teamEvents?.text =
-                            " ${result.extractData!![0].strLeague}\n ${result.extractData!![0].strLeague2}\n ${result.extractData!![0].strLeague3}\n${result.extractData!![0].strLeague4}\n ${result.extractData!![0].strLeague5}"
+                                "${if(result.extractData!![0].strLeague.isEmpty()) "" else "-${result.extractData!![0].strLeague}\n"}${if(result.extractData!![0].strLeague2.isEmpty()) "" else "-${result.extractData!![0].strLeague2}\n"}" +
+                                        "${if(result.extractData!![0].strLeague3.isEmpty()) "" else "-${result.extractData!![0].strLeague3}\n"}${if (result.extractData!![0].strLeague4.isEmpty()) "" else "-${result.extractData!![0].strLeague4}\n"}" +
+                                        "${if(result.extractData!![0].strLeague5.isEmpty()) "" else "-${result.extractData!![0].strLeague5}\n"}"
+
+//                            "${result.extractData!![0].strLeague}\n${result.extractData!![0].strLeague2}\n${result.extractData!![0].strLeague3}\n${result.extractData!![0].strLeague4}\n${result.extractData!![0].strLeague5}"
+
+                        println("${result.extractData!![0].strLeague} ${result.extractData!![0].strLeague2} ${result.extractData!![0].strLeague3} ${result.extractData!![0].strLeague4} " +
+                                "${result.extractData!![0].strLeague5}")
 
                         webSiteTeam?.text = result.extractData!![0].strWebsite
+                        Glide
+                            .with(context).load(result.data[0].strTeamJersey).into(jerseyTeam!!)
 
-                        if (result.extractData!![0].strInstagram == null || result.extractData!![0].strInstagram.isEmpty()){
+                        if (result.extractData!![0].strInstagram == null || result.extractData!![0].strInstagram.isEmpty()) {
                             instagramTeam?.visibility = GONE
-                        }else{
+                        } else {
                             instagramTeam?.visibility = VISIBLE
                         }
-                        if (result.extractData!![0].strTwitter == null || result.extractData!![0].strTwitter.isEmpty()){
+                        if (result.extractData!![0].strTwitter == null || result.extractData!![0].strTwitter.isEmpty()) {
                             twitterTeam?.visibility = GONE
-                        }else{
+                        } else {
                             twitterTeam?.visibility = VISIBLE
                         }
 
-                        if (result.extractData!![0].strYoutube == null || result.extractData!![0].strYoutube.isEmpty()){
+                        if (result.extractData!![0].strYoutube == null || result.extractData!![0].strYoutube.isEmpty()) {
                             youtubeTeam?.visibility = GONE
-                        }else{
+                        } else {
                             youtubeTeam?.visibility = VISIBLE
                         }
 
-                        if (result.extractData!![0].strFacebook == null || result.extractData!![0].strFacebook.isEmpty()){
+                        if (result.extractData!![0].strFacebook == null || result.extractData!![0].strFacebook.isEmpty()) {
                             facebookTeam?.visibility = GONE
-                        }else{
+                        } else {
                             facebookTeam?.visibility = VISIBLE
                         }
 
@@ -150,7 +157,8 @@ class TeamsAdapter(var teams: MutableList<Team>, val application: MainActivity) 
                             val intent = Intent()
                             intent.action = Intent.ACTION_VIEW
                             intent.addCategory(Intent.CATEGORY_BROWSABLE)
-                            intent.data = Uri.parse("https://"+result.extractData!![0].strInstagram)
+                            intent.data =
+                                Uri.parse("https://" + result.extractData!![0].strInstagram)
                             context.startActivity(intent)
                         }
 
@@ -158,7 +166,7 @@ class TeamsAdapter(var teams: MutableList<Team>, val application: MainActivity) 
                             val intent = Intent()
                             intent.action = Intent.ACTION_VIEW
                             intent.addCategory(Intent.CATEGORY_BROWSABLE)
-                            intent.data = Uri.parse("https://"+result.extractData!![0].strTwitter)
+                            intent.data = Uri.parse("https://" + result.extractData!![0].strTwitter)
                             context.startActivity(intent)
                         }
 
@@ -166,7 +174,7 @@ class TeamsAdapter(var teams: MutableList<Team>, val application: MainActivity) 
                             val intent = Intent()
                             intent.action = Intent.ACTION_VIEW
                             intent.addCategory(Intent.CATEGORY_BROWSABLE)
-                            intent.data = Uri.parse("https://"+result.extractData!![0].strYoutube)
+                            intent.data = Uri.parse("https://" + result.extractData!![0].strYoutube)
                             context.startActivity(intent)
                         }
 
@@ -174,7 +182,8 @@ class TeamsAdapter(var teams: MutableList<Team>, val application: MainActivity) 
                             val intent = Intent()
                             intent.action = Intent.ACTION_VIEW
                             intent.addCategory(Intent.CATEGORY_BROWSABLE)
-                            intent.data = Uri.parse("https://"+result.extractData!![0].strFacebook)
+                            intent.data =
+                                Uri.parse("https://" + result.extractData!![0].strFacebook)
                             context.startActivity(intent)
                         }
 
@@ -183,7 +192,7 @@ class TeamsAdapter(var teams: MutableList<Team>, val application: MainActivity) 
             })
 
             try {
-                mDialogInfoAppts!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                mDialogInfoAppts?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             } catch (e: NullPointerException) {
                 e.printStackTrace()
             }
@@ -191,6 +200,7 @@ class TeamsAdapter(var teams: MutableList<Team>, val application: MainActivity) 
             btnBookAppt!!.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(v: View?) {
                     mDialogInfoAppts?.dismiss()
+                    mDialogInfoAppts.cancel()
                 }
             })
 
