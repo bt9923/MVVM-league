@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Spanish League</string>
+    <string name="no_data_msg">No hay datos</string>
+    <string name="dismiss">Ocultar</string>
+</resources>
