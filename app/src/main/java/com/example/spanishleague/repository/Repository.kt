@@ -11,9 +11,9 @@ class Repository(val apiService: ApiService) {
 
     private val TAG = Repository::class.java.name
 
-    suspend fun getAllTeams(): Response<Teams>? {
+    suspend fun getAllTeams(idTeam: String): Response<Teams>? {
         try {
-            val response = apiService.getAllTeams()
+            val response = apiService.getAllTeams(idTeam)
             response.let {
                 return  it
             }

@@ -12,8 +12,8 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    @GET("/api/v1/json/1/lookup_all_teams.php?id=4335")
-    suspend fun getAllTeams() : Response<Teams>
+    @GET("/api/v1/json/1/lookup_all_teams.php?")
+    suspend fun getAllTeams(@Query("id") idTeam: String) : Response<Teams>
 
     //https://www.thesportsdb.com/api/v1/json/1/lookupteam.php?id=134221
     @GET("/api/v1/json/1/lookupteam.php?id=134221")

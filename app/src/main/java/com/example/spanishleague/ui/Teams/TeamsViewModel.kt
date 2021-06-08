@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spanishleague.data.model.Team
-import com.example.spanishleague.data.model.Teams
 import com.example.spanishleague.repository.Repository
 import com.example.spanishleague.utils.Result
 import kotlinx.coroutines.Dispatchers
@@ -25,13 +24,13 @@ class TeamsViewModel(private val repository: Repository) : ViewModel() {
 
     fun getCurrentPage() = currentPage
 
-    fun loadData(){
+    fun loadData(idTeam: String) {
         try {
             if (currentPage == 1){
                 teams.postValue(Result.InProgress)
             }
             viewModelScope.launch(Dispatchers.IO){
-                val response = repository.getAllTeams()
+                val response = repository.getAllTeams(idTeam)
                 response?.let {
                     val teamList = it.body()?.teams
                     teamList?.let { list ->

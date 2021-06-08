@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/spanish_league"
+        android:orderInCategory="100"
+        android:title="Spanish League" />
+
+    <item
+        android:id="@+id/santander_league"
+        android:orderInCategory="100"
+        android:title="Scothis Premier League" />
+
+    <item
+        android:id="@+id/english_league"
+        android:orderInCategory="100"
+        android:title="English Premier League" />
+
+</menu>

@@ -75,34 +75,34 @@ class TeamsAdapter(var teams: MutableList<Team>, val application: MainActivity) 
 
             cardView.setOnClickListener {
                 teamsViewModel!!.loadTeamDetail(team.idTeam)
-                showDialogInfoAppts(context, teamsViewModel, team.idTeam)
+                showDialogDetailTeam(context, teamsViewModel, team.idTeam)
             }
         }
 
-        private fun showDialogInfoAppts(
+        private fun showDialogDetailTeam(
             context: MainActivity,
             teamsViewModel: TeamsViewModel?,
             idTeam: String
         ) {
             //        mDialogInfoAppts.setTitle(R.string.type_service_consultation);
-            var mDialogInfoAppts = Dialog(context)
-            mDialogInfoAppts?.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            mDialogInfoAppts?.setContentView(R.layout.info_appointment_available)
-            val nameTeam = mDialogInfoAppts?.findViewById<TextView?>(R.id.nameTeam)
-            val stadiumTeam = mDialogInfoAppts?.findViewById<TextView?>(R.id.stadiumTeam)
-            val foundationYearTeam = mDialogInfoAppts?.findViewById<TextView?>(R.id.foundationYearTeam)
-            val badgeTeam = mDialogInfoAppts?.findViewById<ImageView?>(R.id.imgPhysicianItem)
+            var mDialogDetail = Dialog(context)
+            mDialogDetail.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            mDialogDetail.setContentView(R.layout.info_appointment_available)
+            val nameTeam = mDialogDetail.findViewById<TextView?>(R.id.nameTeam)
+            val stadiumTeam = mDialogDetail.findViewById<TextView?>(R.id.stadiumTeam)
+            val foundationYearTeam = mDialogDetail.findViewById<TextView?>(R.id.foundationYearTeam)
+            val badgeTeam = mDialogDetail.findViewById<ImageView?>(R.id.imgPhysicianItem)
 
-            val teamEvents = mDialogInfoAppts?.findViewById<TextView?>(R.id.teamEvents)
+            val teamEvents = mDialogDetail.findViewById<TextView?>(R.id.teamEvents)
 //            val hourAppts = mDialogInfoAppts!!.findViewById(R.id.hourAppointment)
-            val webSiteTeam = mDialogInfoAppts?.findViewById<TextView>(R.id.webSiteTeam)
-            val instagramTeam = mDialogInfoAppts?.findViewById<ImageView>(R.id.instagramTeam)
-            val facebookTeam = mDialogInfoAppts?.findViewById<ImageView>(R.id.facebookTeam)
-            val youtubeTeam = mDialogInfoAppts?.findViewById<ImageView>(R.id.youtubeTeam)
-            val twitterTeam = mDialogInfoAppts?.findViewById<ImageView>(R.id.twitterTeam)
-            val jerseyTeam = mDialogInfoAppts?.findViewById<ImageView>(R.id.jerseyTeam)
-            val mBtnCancel = mDialogInfoAppts?.findViewById<Button?>(R.id.btnCancel)
-            val btnBookAppt = mDialogInfoAppts?.findViewById<Button?>(R.id.btnBookAppt)
+            val webSiteTeam = mDialogDetail.findViewById<TextView>(R.id.webSiteTeam)
+            val instagramTeam = mDialogDetail.findViewById<ImageView>(R.id.instagramTeam)
+            val facebookTeam = mDialogDetail.findViewById<ImageView>(R.id.facebookTeam)
+            val youtubeTeam = mDialogDetail.findViewById<ImageView>(R.id.youtubeTeam)
+            val twitterTeam = mDialogDetail.findViewById<ImageView>(R.id.twitterTeam)
+            val jerseyTeam = mDialogDetail.findViewById<ImageView>(R.id.jerseyTeam)
+            val mBtnCancel = mDialogDetail.findViewById<Button?>(R.id.btnCancel)
+            val btnBookAppt = mDialogDetail.findViewById<Button?>(R.id.btnBookAppt)
 
             webSiteTeam?.movementMethod = LinkMovementMethod.getInstance()
 //            teamsViewModel!!.loadTeamDetail(idTeam)
@@ -116,10 +116,12 @@ class TeamsAdapter(var teams: MutableList<Team>, val application: MainActivity) 
                         stadiumTeam?.text = "Estadio: ${result.extractData!![0].strStadium}"
                         foundationYearTeam?.text =
                             "Año de fundación: ${result.extractData!![0].intFormedYear} "
-                        teamEvents?.text =
-                                "${if(result.extractData!![0].strLeague.isEmpty()) "" else "-${result.extractData!![0].strLeague}\n"}${if(result.extractData!![0].strLeague2.isEmpty()) "" else "-${result.extractData!![0].strLeague2}\n"}" +
-                                        "${if(result.extractData!![0].strLeague3.isEmpty()) "" else "-${result.extractData!![0].strLeague3}\n"}${if (result.extractData!![0].strLeague4.isEmpty()) "" else "-${result.extractData!![0].strLeague4}\n"}" +
-                                        "${if(result.extractData!![0].strLeague5.isEmpty()) "" else "-${result.extractData!![0].strLeague5}\n"}"
+                        if (result.extractData != null) {
+                            teamEvents?.text =
+                                "${if (result.extractData!![0].strLeague == null || result.extractData!![0].strLeague.isEmpty()) "" else "-${result.extractData!![0].strLeague}\n"}${if (result.extractData!![0].strLeague2 == null || result.extractData!![0].strLeague2.isEmpty()) "" else "-${result.extractData!![0].strLeague2}\n"}" +
+                                        "${if (result.extractData!![0].strLeague3 == null || result.extractData!![0].strLeague3.isEmpty()) "" else "-${result.extractData!![0].strLeague3}\n"}${if (result.extractData!![0].strLeague4 == null || result.extractData!![0].strLeague4.isEmpty()) "" else "-${result.extractData!![0].strLeague4}\n"}" +
+                                        "${if (result.extractData!![0].strLeague5 == null || result.extractData!![0].strLeague5.isEmpty()) "" else "-${result.extractData!![0].strLeague5}\n"}"
+                        }
 
 //                            "${result.extractData!![0].strLeague}\n${result.extractData!![0].strLeague2}\n${result.extractData!![0].strLeague3}\n${result.extractData!![0].strLeague4}\n${result.extractData!![0].strLeague5}"
 
@@ -192,19 +194,19 @@ class TeamsAdapter(var teams: MutableList<Team>, val application: MainActivity) 
             })
 
             try {
-                mDialogInfoAppts?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                mDialogDetail.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             } catch (e: NullPointerException) {
                 e.printStackTrace()
             }
 
             btnBookAppt!!.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(v: View?) {
-                    mDialogInfoAppts?.dismiss()
-                    mDialogInfoAppts.cancel()
+                    mDialogDetail.dismiss()
+                    mDialogDetail.cancel()
                 }
             })
 
-            mDialogInfoAppts?.show()
+            mDialogDetail.show()
         }
     }
 }
